@@ -1,3 +1,7 @@
+:root {
+  --primary: #1a73e8;
+}
+
 body {
   font-family: 'Roboto';
 }
