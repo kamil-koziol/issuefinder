@@ -15,7 +15,11 @@ var loggerContextKey LoggerContextKeyType = "logger"
 func LoggerContextMiddleware(baseLogger *slog.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			reqLogger := baseLogger.With("path", r.URL.Path, "request_id", middleware.GetReqID(r.Context()))
+			reqLogger := baseLogger.With(
+				"path", r.URL.Path,
+				"request_id", middleware.GetReqID(r.Context()),
+				"ip", r.RemoteAddr,
+			)
 			ctx := context.WithValue(r.Context(), loggerContextKey, reqLogger)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
