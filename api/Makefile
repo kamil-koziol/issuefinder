@@ -1,6 +1,10 @@
 .PHONY: run
 run:
-	go run ./cmd/api/*
+	@command -v air >/dev/null 2>&1 || { \
+		go install github.com/air-verse/air@v1.63.0 \
+		exit 1; \
+	}
+	air
 
 .PHONY: test
 test:
