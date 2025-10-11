@@ -29,6 +29,7 @@ func (s *Server) Routes() *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
 	r.Use(LoggerContextMiddleware(slog.Default()))
 	r.Use(LoggingMiddleware)
 
