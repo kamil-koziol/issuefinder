@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 type Server struct {
@@ -25,6 +26,7 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) Routes() *chi.Mux {
 	r := chi.NewRouter()
+	r.Use(middleware.RequestID)
 	r.Method(http.MethodGet, "/v1/health", Handler(s.GetHealthHandler))
 	return r
 }
