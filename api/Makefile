@@ -34,3 +34,23 @@ lint-fix: require-golangci-lint
 
 format: require-golangci-lint
 	golangci-lint fmt
+
+.PHONY: require-migrate
+require-migrate:
+	@command -v migrate >/dev/null 2>&1 || { \
+		echo "migrate is not installed. Run `go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate` to install it."; \
+		exit 1; \
+	}
+
+
+.PHONY: migration
+migration: require-migrate
+	migrate create -ext sql -dir migrations -seq $(name)
+
+.PHONY: migration
+migrate-up: require-migrate
+	migrate -database ${POSTGRESQL_URL} -path migrations up
+
+.PHONY: migration
+migrate-down: require-migrate
+	migrate -database ${POSTGRESQL_URL} -path migrations down
