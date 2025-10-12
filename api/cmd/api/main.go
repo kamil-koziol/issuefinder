@@ -14,8 +14,12 @@ func main() {
 		log.Fatal(fmt.Errorf("unable to load config: %w", err))
 	}
 
-	s := server.NewServer(cfg)
-	err := s.Run()
+	s, err := server.NewServer(cfg)
+	if err != nil {
+		log.Fatal(fmt.Errorf("unable to create server: %w", err))
+	}
+
+	err = s.Run()
 	if err != nil {
 		log.Fatal(err)
 	}

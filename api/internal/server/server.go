@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -8,14 +9,27 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5"
 	"github.com/kamil-koziol/issuefinder/api/internal/config"
 )
 
 type Server struct {
+	config     config.Config
 	httpServer *http.Server
+	db         *pgx.Conn
 }
 
 func (s *Server) Run() error {
+	db, err := pgx.Connect(context.Background(), s.config.PostgreSQLURL.String())
+	if err != nil {
+		return fmt.Errorf("unable to connect to db: %w", err)
+	}
+	defer db.Close(context.Background()) //nolint:errcheck
+
+	s.db = db
+
+	s.httpServer.Handler = s.Routes()
+
 	return s.httpServer.ListenAndServe()
 }
 
@@ -39,7 +53,7 @@ func (s *Server) Routes() *chi.Mux {
 	return r
 }
 
-func NewServer(cfg config.Config) *Server {
+func NewServer(cfg config.Config) (*Server, error) {
 	s := &Server{
 		httpServer: &http.Server{
 			Addr: fmt.Sprintf(":%d", cfg.Port),
@@ -51,8 +65,8 @@ func NewServer(cfg config.Config) *Server {
 
 			MaxHeaderBytes: 1 << 20, // 1MB
 		},
+		config: cfg,
 	}
 
-	s.httpServer.Handler = s.Routes()
-	return s
+	return s, nil
 }
