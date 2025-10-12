@@ -1,12 +1,14 @@
 package server
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/kamil-koziol/issuefinder/api/internal/config"
 )
 
 type Server struct {
@@ -37,10 +39,10 @@ func (s *Server) Routes() *chi.Mux {
 	return r
 }
 
-func NewServer() *Server {
+func NewServer(cfg config.Config) *Server {
 	s := &Server{
 		httpServer: &http.Server{
-			Addr: ":53430",
+			Addr: fmt.Sprintf(":%d", cfg.Port),
 
 			ReadTimeout:       5 * time.Second,
 			ReadHeaderTimeout: 2 * time.Second,
