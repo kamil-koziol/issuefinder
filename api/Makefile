@@ -6,6 +6,11 @@ run:
 	}
 	air
 
+.PHONY: dev
+dev:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+	make run
+
 .PHONY: test
 test:
 	go test ./...
