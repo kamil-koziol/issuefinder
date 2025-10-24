@@ -54,3 +54,6 @@ migrate-up: require-migrate
 .PHONY: migration
 migrate-down: require-migrate
 	migrate -database ${POSTGRESQL_URL} -path migrations down
+
+sqlc:
+	go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.30
