@@ -11,12 +11,14 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5"
 	"github.com/kamil-koziol/issuefinder/api/internal/config"
+	"github.com/kamil-koziol/issuefinder/api/internal/store"
 )
 
 type Server struct {
 	config     config.Config
 	httpServer *http.Server
 	db         *pgx.Conn
+	querier    store.Querier
 }
 
 func (s *Server) Run() error {
@@ -27,6 +29,7 @@ func (s *Server) Run() error {
 	defer db.Close(context.Background()) //nolint:errcheck
 
 	s.db = db
+	s.querier = store.New(s.db)
 
 	s.httpServer.Handler = s.Routes()
 
